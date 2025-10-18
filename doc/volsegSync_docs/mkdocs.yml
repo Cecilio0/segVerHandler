@@ -1,0 +1,6 @@
+site_name: volsegSync
+nav:
+  - Home: index.md
+  - Development: development.md
+  - Changelog: changelog.md
+theme: readthedocs
