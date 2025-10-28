@@ -11,6 +11,8 @@
 import os
 import click
 
+from exceptions import SegVerException
+
 from config import (
     load_config,
     save_config
@@ -31,12 +33,12 @@ from manifest import (
 )
 
 from commons import (
-    SegVerException,
     extract_version_number,
     verify_volseg_match,
     update_index,
     validate_csv_path,
     check_geometry,
+    hash_image
 )
 
 
@@ -292,7 +294,7 @@ class KomsService:
         if len(errors) > 0:
             return log, warnings, errors
 
-        added = add_volume_version(self._manifest, vol_base, f"v{version}")
+        added = add_volume_version(self._manifest, vol_base, f"v{version}", hash=hash_image(seg_path))
         save_manifest(self._config_directory, self._manifest)
 
         if added:

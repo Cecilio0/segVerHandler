@@ -16,7 +16,6 @@ from datetime import datetime, timezone
 from exceptions import SegVerException, ImageDataMatchingError
 
 from manifest import (
-    add_volume_version,
     get_all_version_strings,
     get_all_versions,
     remove_volume,
@@ -138,7 +137,7 @@ def verify_volseg_match( volumes_path:str, vext: str,
             ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             versions.append({
                 "id": seg_base,
-                "hash": "",
+                "hash": hash_image( os.path.join(segmentations_path, seg_base + sext) ),
                 "ts": ts,
                 "author": "",
                 "notes": "",
@@ -198,6 +197,7 @@ def update_index(manifest: dict, new_manifest: dict):
     for subject_key in manifest["volumes"].keys():
         for version in get_all_versions(manifest, subject_key):
             seg_set.add(version["id"])
+            
     new_seg_set = set()
     for subject_key in new_manifest["volumes"].keys():
         for version in get_all_versions(new_manifest, subject_key):
@@ -213,7 +213,7 @@ def update_index(manifest: dict, new_manifest: dict):
             existing_versions = get_all_version_strings(manifest, subject_key)
             for version in new_vol_data["versions"]:
                 if version["version"] not in existing_versions:
-                    add_volume_version(manifest, subject_key, version["version"])
+                    manifest["volumes"][subject_key]["versions"].append(version)
                     log_messages.append(f"Added new segmentation {version['version']} to volume {subject_key}")
 
     # Identify removed volumes
@@ -275,3 +275,10 @@ def extract_version_number(seg_base: str, vol_name: str) -> int | None:
     if not m:
         return None
     return int(m.group(1))
+
+def hash_image(fpath: str) -> str:
+    """
+    Generate a simple hash for a SimpleITK image based on its properties.
+    """
+    image = sitk.ReadImage(fpath)
+    return sitk.Hash(image)
