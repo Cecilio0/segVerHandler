@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name        : quickviewer.py
-# Description : Volumen-Segmentation Sync - Quick viewer.  
+# Description : Segmentation Version Handler - Quick viewer.  
 #
-# Authors     : William A. Romero R.  <contact@waromero.com>
+# Authors     : William A. Romero R.  <contact@waromero.com>,
+#               Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 import wx
 import numpy as np
@@ -17,8 +19,8 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 
 
 from kernel import (
-    VolSegTListManager,
-    VolSegSynParser
+    SegVerTListManager,
+    SegVerParser
 )
 
 
@@ -240,7 +242,7 @@ class ViewerPanel(wx.Panel):
         self.SetSizer(sizer)
         self.Fit()
 
-        self.__volSegTListManager = VolSegTListManager()
+        self.__volSegTListManager = SegVerTListManager()
 
         self.notificationCentre = NotificationCentre()
         self.notificationCentre.addObserver(self, self.OnVolumeSelected, "VOLUME_SELECTED")
@@ -249,7 +251,7 @@ class ViewerPanel(wx.Panel):
         self.UpdateVolSegViewer()
 
 
-    def SetVolSegTListManager(self, vsTListManager:VolSegTListManager):
+    def SetSegVerTListManager(self, vsTListManager:SegVerTListManager):
         """
         Default.
         """
@@ -323,11 +325,11 @@ class QuickViewerFrame(wx.Frame):
         self.Show()
 
 
-    def SetVolSegTListManager(self, vsTListManager:VolSegTListManager):
+    def SetSegVerTListManager(self, vsTListManager:SegVerTListManager):
         """
         Set/Update volume list.
         """
-        self.viewer_panel.SetVolSegTListManager(vsTListManager)
+        self.viewer_panel.SetSegVerTListManager(vsTListManager)
         self.volume_list_panel.UpdateVolumeList(vsTListManager.get_vol_name_list())
 
 
@@ -335,11 +337,11 @@ class QuickViewer(wx.App):
     """
     Volumen-Segmentation - Quick viewer.
     """
-    def __init__(self, INPUT_VOLSEGSYNC_DIRECTORY_PATH):
+    def __init__(self, INPUT_SEGVERSYNC_DIRECTORY_PATH):
         """
         Default constructor.
         """
-        self.directoryPath = INPUT_VOLSEGSYNC_DIRECTORY_PATH
+        self.directoryPath = INPUT_SEGVERSYNC_DIRECTORY_PATH
         super(QuickViewer, self).__init__()
 
 
@@ -349,11 +351,11 @@ class QuickViewer(wx.App):
         """
         frame = QuickViewerFrame()
 
-        volsegParser = VolSegSynParser(self.directoryPath)
+        volsegParser = SegVerParser(self.directoryPath)
 
-        volSegTListManager = volsegParser.get_VolSegTListManager()
+        volSegTListManager = volsegParser.get_SegVerTListManager()
 
-        frame.SetVolSegTListManager(volSegTListManager)
+        frame.SetSegVerTListManager(volSegTListManager)
 
         frame.Centre()
         frame.Show(True)

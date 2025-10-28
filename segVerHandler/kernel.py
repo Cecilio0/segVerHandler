@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name        : kernel.py
-# Description : Volumen-Segmentation Sync
-#               Defs, data structs and core classes.      
+# Description : Segmentation Version Handler - Defs, data structs and core classes.
 #
-# Authors     : William A. Romero R.  <contact@waromero.com>
+# Authors     : William A. Romero R.  <contact@waromero.com>,
+#               Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 import os
 from dataclasses import dataclass
@@ -14,14 +15,15 @@ import SimpleITK as sitk
 import config as cfg
 
 from config import load_config
-from commons import VolSegException
+from commons import SegVerException
+from exceptions import SegVerParserException
 from manifest import (
     load_manifest,
     get_volume_seg_tuples
 )
 
 @dataclass
-class VolSegTuple:
+class SegVerTuple:
     """
     Volume-Segmentation data class.
     """
@@ -31,7 +33,7 @@ class VolSegTuple:
     abs_seg_fpath: str = "None"
 
 
-class VolSegTListManager( object ):
+class SegVerTListManager( object ):
     """
     VolSeg Tuple list manager.
     """
@@ -43,7 +45,7 @@ class VolSegTListManager( object ):
         self.__cidx = 0
 
 
-    def add(self, item:VolSegTuple) -> None:
+    def add(self, item:SegVerTuple) -> None:
         """
         Add (Volume, Segmentation) Tuple object.
         """
@@ -57,7 +59,7 @@ class VolSegTListManager( object ):
         """
         Add (Volume, Segmentation) item.
         """
-        new_item = VolSegTuple()
+        new_item = SegVerTuple()
         new_item.index = self.__cidx
         new_item.name =  a_name
         new_item.abs_vol_fpath = a_vol_file_path
@@ -108,37 +110,30 @@ class VolSegTListManager( object ):
         return sitk.GetArrayFromImage(segmentation)        
 
 
-class VolSegSynParserException( Exception ):
+class SegVerParser( object ):
     """
-    Custom exception class.
-    """
-    pass
-
-
-class VolSegSynParser( object ):
-    """
-    VolSegSyn instance reader.
+    SegVerHandler instance reader.
     """
     def __init__( self, inputDirectoryPath ):
         """
         Default constructor.
         """
         self.__working_directory = inputDirectoryPath
-        self.__config_directory = os.path.join(self.__working_directory, cfg.VOLSEG_INSTANCE_DIRECTORY_NAME)
-        self.__config_file = os.path.join(self.__config_directory, cfg.VOLSEG_INSTANCE_CFG_FILE_NAME)
+        self.__config_directory = os.path.join(self.__working_directory, cfg.SEGVER_INSTANCE_DIRECTORY_NAME)
+        self.__config_file = os.path.join(self.__config_directory, cfg.SEGVER_INSTANCE_CFG_FILE_NAME)
 
         self.__name = "None"
         self.__description = "None"
 
         self.__volumes = []
         self.__segmentations = []
-        self.__volSegTListManager = VolSegTListManager()       
+        self.__volSegTListManager = SegVerTListManager()       
 
         if not os.path.exists(self.__working_directory):
-            raise VolSegException("[VolSegSynParser] No volsegSync instance found in this directory.")
+            raise SegVerException("[SegVerParser] No segVerHandler instance found in this directory.")
             
         if not os.path.exists(self.__config_file):
-            raise VolSegException("[VolSegSynParser] No volsegSync configuration found in this directory.")
+            raise SegVerException("[SegVerParser] No segVerHandler configuration found in this directory.")
         
         self.__load()
 
@@ -147,7 +142,7 @@ class VolSegSynParser( object ):
         """
         Default String obj.
         """
-        outputStr = "\n[VolSegSynParser]\n\n"
+        outputStr = "\n[SegVerParser]\n\n"
         outputStr += "Instance: \n\t%s\n\n" % self.__working_directory
         outputStr += "Name: %s\n" % self.__name
         outputStr += "Description: %s\n" % self.__description
@@ -158,7 +153,7 @@ class VolSegSynParser( object ):
     def __load( self ):
         """
         Load absolute file paths (volumes and segmentations).
-        TODO: Manage/Use VolSegSynParserException.
+        TODO: Manage/Use SegVerParserException.
         """
         try:
             cfg = load_config(self.__config_file)
@@ -181,7 +176,7 @@ class VolSegSynParser( object ):
                 )          
 
         except Exception as exception:
-            print("[VolSegSynParser::Load Exception] %s" % str(exception))
+            print("[SegVerParser::Load Exception] %s" % str(exception))
 
 
     def get_volumes( self ):
@@ -198,7 +193,7 @@ class VolSegSynParser( object ):
         return self.__segmentations
 
 
-    def get_VolSegTListManager( self ):
+    def get_SegVerTListManager( self ):
         """
         Return VolSeg Tuple List Manager instance.
         """

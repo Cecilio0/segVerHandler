@@ -1,4 +1,4 @@
-site_name: volsegSync
+site_name: segVerHandler Documentation
 nav:
   - Home: index.md
   - Development: development.md

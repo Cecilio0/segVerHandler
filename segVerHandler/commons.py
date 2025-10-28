@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name        : commons.py
-# Description : Volumen-Segmentation Sync - Common functions.  
+# Description : SegVerHandler - Common functions.  
 #
-# Authors     : William A. Romero R.  <contact@waromero.com>
+# Authors     : William A. Romero R.  <contact@waromero.com>,
+#               Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 import os
 import re
 import SimpleITK as sitk
 from datetime import datetime, timezone
-from config import (
-    VOLSEG_INSTANCE_DIRECTORY_NAME, 
-    VOLSEG_INSTANCE_CFG_FILE_NAME )
+
+from exceptions import SegVerException, ImageDataMatchingError
 
 from manifest import (
     add_volume_version,
@@ -21,14 +22,6 @@ from manifest import (
     remove_volume,
     remove_volume_version
 )
-
-# TODO: extract this logic
-
-class VolSegException(Exception):
-    """
-    Custom exception VolSegSync errors.
-    """
-    pass
 
 
 def find_differences(reference_list:list, target_list:list) -> tuple[list,list]:
@@ -222,12 +215,6 @@ def update_index(manifest: dict, new_manifest: dict):
                 if version["version"] not in existing_versions:
                     add_volume_version(manifest, subject_key, version["version"])
                     log_messages.append(f"Added new segmentation {version['version']} to volume {subject_key}")
-            # TODO: Determine if this is desired behavior
-            # Update selected-version to the latest if needed
-            # existing_versions_list = manifest["volumes"][subject_key]["versions"]
-            # if existing_versions_list:
-            #     latest_version = max(existing_versions_list, key=lambda x: int(x["version"][1:]))
-            #     manifest["volumes"][subject_key]["selected-version"] = latest_version["version"]
 
     # Identify removed volumes
     removed_volumes = volume_set - new_volume_set
@@ -278,7 +265,7 @@ def check_geometry(volume_path: str, seg_path: str):
     if vol_img.GetOrigin() != seg_img.GetOrigin(): diffs.append("origin")
     if vol_img.GetDirection() != seg_img.GetDirection(): diffs.append("direction")
     if diffs:
-        raise VolSegException(f"Geometry mismatch ({', '.join(diffs)}) between volume and segmentation.")
+        raise ImageDataMatchingError(f"Geometry mismatch ({', '.join(diffs)}) between volume and segmentation.")
 
 def extract_version_number(seg_base: str, vol_name: str) -> int | None:
     """

@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name        : manifest.py
-# Description : Volume-Segmentation Sync - Manifest management.
+# Description : Segmentation Version Handler - Manifest management.
 #
-# Authors     : Daniel Restrepo Q. 
+# Authors     : Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 
 import os
@@ -12,14 +13,10 @@ import json
 import hashlib
 from datetime import datetime, timezone
 
+from exceptions import SegVerException
+
 DEFAULT_INDEX_NAME = "index"
 
-# TODO: extract this logic
-class VolSegException(Exception):
-    """
-    Custom exception VolSegSync errors.
-    """
-    pass
 
 def _utc_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -27,10 +24,10 @@ def _utc_iso() -> str:
 
 def _ensure_instance_dir(root_dir: str) -> str:
     """
-    Ensure the .volsegsync directory exists under root_dir.
+    Ensure the .segverhandler directory exists under root_dir.
     """
     if not os.path.isdir(root_dir):
-        raise VolSegException(f"No volsegsync instance found in {root_dir}")
+        raise SegVerException(f"No segverhandler instance found in {root_dir}")
     return root_dir
 
 # TODO: change with SimpleITK hash
@@ -175,7 +172,7 @@ def set_selected_version(manifest: dict, subject_key: str, version: str):
 
 def save_manifest(root_dir: str, manifest: dict) -> str:
     """
-    Save manifest to .volsegsync/<index-name>.manifest.json
+    Save manifest to .segverhandler/<index-name>.manifest.json
     Returns the saved path.
     """
     inst_dir = _ensure_instance_dir(root_dir)
@@ -193,7 +190,7 @@ def load_manifest(root_dir: str, index_name: str) -> dict:
     inst_dir = _ensure_instance_dir(root_dir)
     path = os.path.join(inst_dir, f"{index_name}.manifest.json")
     if not os.path.isfile(path):
-        raise VolSegException(f"No volsegsync instance found in {root_dir}")
+        raise SegVerException(f"No segverhandler instance found in {root_dir}")
     with open(path, "r", encoding="utf-8") as fp:
         return json.load(fp)
     

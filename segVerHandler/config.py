@@ -2,18 +2,21 @@
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name        : config.py
-# Description : Volumen-Segmentation Sync - Settings management package.  
+# Description : Segmentation Version Handler - Settings management package.  
 #
-# Authors     : William A. Romero R.  <contact@waromero.com>
+# Authors     : William A. Romero R.  <contact@waromero.com>,
+#               Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 import os
 import configparser
 
+from exceptions import SegVerException
 
-VOLSEG_INSTANCE_DIRECTORY_NAME = ".volsegsync"
-VOLSEG_INSTANCE_CFG_FILE_NAME = "config"
-VOLSEG_INSTANCE_IDX_FILE_NAME = "index"
-VOLSEG_INSTANCE_TAGS_FILE_NAME = "tags"
+SEGVER_INSTANCE_DIRECTORY_NAME = ".segverhandler"
+SEGVER_INSTANCE_CFG_FILE_NAME = "config"
+SEGVER_INSTANCE_IDX_FILE_NAME = "index"
+SEGVER_INSTANCE_TAGS_FILE_NAME = "tags"
 
 
 def load_config(file_path: str):
@@ -37,12 +40,13 @@ def load_config(file_path: str):
         return config
     
     except Exception as exception:
-        print("[VolSegSync::load_config Exception] %s" % str(exception))
+        raise SegVerException("Failed to load config")
+
 
 
 def save_config(config: configparser.ConfigParser, file_path: str):
     """
-    Save settings into /.volsegsync/config file.
+    Save settings into /.segverhandler/config file.
     """
     fp = open(file_path, 'w')
     config.write(fp)

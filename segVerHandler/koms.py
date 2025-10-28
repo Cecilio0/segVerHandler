@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
 # Name        : koms.py
-# Description : Volumen-Segmentation Sync - Kernel commands.  
+# Description : Segmentation Version Handler - Kernel commands.
 #
-# Authors     : William A. Romero R.  <contact@waromero.com>
+# Authors     : William A. Romero R.  <contact@waromero.com>,
+#               Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 import os
 import click
 
 from koms_service import KomsService
 
-from commons import VolSegException
+from commons import SegVerException
 
 import quickviewer as qview
 
@@ -19,8 +21,8 @@ import quickviewer as qview
 # COMMAND: INIT
 #-------------------------------------------------------------------------------
 @click.command()
-@click.option("--name", default='No name', prompt="Type the name of this volsegSync instance")
-@click.option("--description", default='No description', prompt="Type a short description of this volsegSync instance")
+@click.option("--name", default='No name', prompt="Type the name of this segVerHandler instance")
+@click.option("--description", default='No description', prompt="Type a short description of this segVerHandler instance")
 @click.option("--index-name", default="index", prompt="Type the name of the index to create", show_default=True)
 @click.option("--volumes", prompt="Type the name of the volumes directory")
 @click.option("--vext", prompt="Please type the file extension used for volume files. (i.e. \'.nii.gz\' or \'.mha\')")
@@ -36,7 +38,7 @@ def init( ctx: click.Context,
           segmentations: str,
           sext:str ):
     """
-    Initialize a new volsegSync instance in the current directory.
+    Initialize a new segVerHandler instance in the current directory.
     """
     try:
         log, _, errors = KomsService.initialize_instance(ctx, name, description, index_name, volumes, vext, segmentations, sext)
@@ -46,7 +48,7 @@ def init( ctx: click.Context,
                 click.echo(click.style(error_msg, fg="red"))
         
         click.echo(log[0])
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -68,7 +70,7 @@ def create_index( ctx: click.Context,
           segmentations: str,
           sext:str ):
     """
-    Create a new index in an existing volsegSync instance.
+    Create a new index in an existing segVerHandler instance.
     """
     try:
         service = KomsService(ctx)
@@ -84,13 +86,13 @@ def create_index( ctx: click.Context,
             click.echo(click.style(warning_msg, fg="yellow"))
             
         if len(warnings)>0 and not click.confirm('Do you want to continue?'):
-            click.echo("volsegSync is not initialized in this directory.")
+            click.echo("segVerHandler is not initialized in this directory.")
             exit()
 
         log2, _, _ = service.save_index()
         log.extend(log2)
 
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -137,7 +139,7 @@ def summary( ctx: click.Context ):
         click.echo(f"{'Segmentation file extension':>45} : {ins_sext}\n")
         click.echo(f"{'Number of (volume,segmentation) pairs indexed':>45} : {num_lines}\n")
 
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -158,7 +160,7 @@ def rename(ctx: click.Context, name, description):
         service = KomsService(ctx)
         log, _, _ = service.rename_instance(name, description if description.strip() != "" else service.get_instance_description())
 
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -179,7 +181,7 @@ def update( ctx: click.Context ):
     try:
         service = KomsService(ctx)
         log, warnings, errors, matches = service.get_volseg_matches()
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -192,12 +194,12 @@ def update( ctx: click.Context ):
         click.echo(click.style(warning_msg, fg="yellow"))
         
     if len(warnings)>0 and not click.confirm('Do you want to continue?'):
-        click.echo("volsegSync is not initialized in this directory.")
+        click.echo("segVerHandler is not initialized in this directory.")
         exit()
 
     try:
         log, warnings, errors = service.update_index({ "volumes": matches })
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -206,7 +208,7 @@ def update( ctx: click.Context ):
         for msg in log:
             click.echo(click.style(f"\t{msg}", fg="yellow"))
 
-        click.echo(f"\nvolsegSync instance updated.\n")
+        click.echo(f"\nsegVerHandler instance updated.\n")
     else:
         click.echo(f"\nNothing to do!\n")
 
@@ -226,7 +228,7 @@ def export( ctx: click.Context, output: str ):
         log, _, _ = service.export_index(output)
         for log_msg in log:
             click.echo(click.style(log_msg, fg="green"))
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -243,7 +245,7 @@ def display( ctx: click.Context ):
     try:
         service = KomsService(ctx)
         config_working_directory = service.get_volseg_directory()
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -268,7 +270,7 @@ def link(ctx: click.Context, volume_fname: str, seg_fname: str):
     try:
         service = KomsService(ctx)
         log, warnings, errors = service.link_segmentation(volume_fname, seg_fname)
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 
@@ -299,7 +301,7 @@ def select_seg(ctx: click.Context, volume_fname: str, seg_version: str):
     try:
         service = KomsService(ctx)
         log, warnings, errors = service.select_segmentation(volume_fname, seg_version)
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
         
@@ -320,12 +322,12 @@ def select_seg(ctx: click.Context, volume_fname: str, seg_version: str):
 @click.pass_context
 def select_index(ctx: click.Context, index_name: str):
     """
-    Set the selected index for the volsegSync instance.
+    Set the selected index for the segVerHandler instance.
     """
     try:
         service = KomsService(ctx)
         log, warnings, _ = service.select_index(index_name)
-    except VolSegException as e:
+    except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()
 

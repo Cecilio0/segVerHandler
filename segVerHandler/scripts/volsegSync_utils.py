@@ -11,24 +11,24 @@ import os
 import configparser
 import traceback
 
-VolSegSyn_CONFIG_DIRECTORY_NAME = ".volsegsync"
-VolSegSyn_CONFIG_FILE_NAME = "config"
-VolSegSyn_INDEX_FILE_NAME = "index"
-VolSegSyn_TAGS_FILE_NAME = "tags"
+SegVerHandler_CONFIG_DIRECTORY_NAME = ".segverhandler"
+SegVerHandler_CONFIG_FILE_NAME = "config"
+SegVerHandler_INDEX_FILE_NAME = "index"
+SegVerHandler_TAGS_FILE_NAME = "tags"
 
 
-class VolSegSynParser( object ):
+class SegVerParser( object ):
     """
-    VolSegSyn instance reader.
+    SegVerHandler instance reader.
     """
     def __init__( self, inputDirectoryPath ):
         """
         Default constructor.
         """
         self.__working_directory = inputDirectoryPath
-        self.__config_directory = os.path.join(self.__working_directory, VolSegSyn_CONFIG_DIRECTORY_NAME)
-        self.__config_file_path = os.path.join(self.__config_directory, VolSegSyn_CONFIG_FILE_NAME)
-        self.__index_file_path =  os.path.join(self.__config_directory, VolSegSyn_INDEX_FILE_NAME)
+        self.__config_directory = os.path.join(self.__working_directory, SegVerHandler_CONFIG_DIRECTORY_NAME)
+        self.__config_file_path = os.path.join(self.__config_directory, SegVerHandler_CONFIG_FILE_NAME)
+        self.__index_file_path =  os.path.join(self.__config_directory, SegVerHandler_INDEX_FILE_NAME)
 
         self.__name = "None"
         self.__description = "None"
@@ -55,7 +55,7 @@ class VolSegSynParser( object ):
         """
         Default String obj.
         """
-        outputStr = "\n[VolSegSynParser]\n\n"
+        outputStr = "\n[SegVerParser]\n\n"
         outputStr += "Instance: \n\t%s\n\n" % self.__working_directory
         outputStr += "Name: %s\n" % self.__name
         outputStr += "Description: %s\n" % self.__description
@@ -92,8 +92,8 @@ class VolSegSynParser( object ):
                     self.__segmentations.append( os.path.join(segmentations_path, sfname) )
 
         except Exception as exception:
-            print("[VolSegSynParser::Load Exception] %s" % str(exception))
-            print("[VolSegSynParser::Load Exception] %s" % str(traceback.format_exc()))
+            print("[SegVerParser::Load Exception] %s" % str(exception))
+            print("[SegVerParser::Load Exception] %s" % str(traceback.format_exc()))
 
 
     def GetVolumes( self ):

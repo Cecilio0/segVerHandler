@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
-# Name        : koms.py
-# Description : Volumen-Segmentation Sync - Kernel command business logic.  
+# Name        : koms_service.py
+# Description : Segmentation Version Handler - Kernel command business logic.
 #
-# Authors     : Daniel Restrepo Q.
+# Authors     : Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 
 import os
@@ -30,7 +31,7 @@ from manifest import (
 )
 
 from commons import (
-    VolSegException,
+    SegVerException,
     extract_version_number,
     verify_volseg_match,
     update_index,
@@ -53,7 +54,7 @@ class KomsService:
         segmentations_path = os.path.join(volseg_directory, segmentations)
 
         if os.path.isdir(config_directory) or os.path.isfile(config_file_path):
-            raise VolSegException(f"\nA volsegSync instance already exists in this directory.\n")
+            raise SegVerException(f"\nA volsegSync instance already exists in this directory.\n")
         
         _, warnings, errors, matches = verify_volseg_match(volumes_path, vext, segmentations_path, sext)
 
@@ -71,7 +72,7 @@ class KomsService:
         try: 
             os.mkdir(config_directory)
         except Exception as exception:
-            raise VolSegException(f"\nCould not create volsegSync instance directory: {str(exception)}\n")
+            raise SegVerException(f"\nCould not create volsegSync instance directory: {str(exception)}\n")
 
         cfg = load_config(config_file_path)
         cfg['summary']['name'] = name
@@ -102,7 +103,7 @@ class KomsService:
         self._config_file_path = ctx.obj["current_config_file_path"]
 
         if not os.path.isdir(self._config_directory) or not os.path.isfile(self._config_file_path):
-            raise VolSegException(f"\nNo volsegSync instance found in this directory.\n")
+            raise SegVerException(f"\nNo volsegSync instance found in this directory.\n")
 
         self._config = load_config(self._config_file_path)
 
@@ -140,7 +141,7 @@ class KomsService:
         errors = []
 
         if index_name in self._available_indexes:
-            raise VolSegException(f"\nIndex '{index_name}' already exists. Available indexes: {', '.join(self._available_indexes)}\n")
+            raise SegVerException(f"\nIndex '{index_name}' already exists. Available indexes: {', '.join(self._available_indexes)}\n")
         
         volumes_path = os.path.join(self._volseg_directory, volumes)
         segmentations_path = os.path.join(self._volseg_directory, segmentations)
@@ -215,12 +216,12 @@ class KomsService:
 
         errors = validate_csv_path(output_csv_path)
         if len(errors) > 0:
-            raise VolSegException(errors[0])
+            raise SegVerException(errors[0])
 
         volume_seg_tuples = get_volume_seg_tuples(self._manifest, self._volseg_directory)
 
         if not volume_seg_tuples:
-            raise VolSegException("No volumes found in the current index.")
+            raise SegVerException("No volumes found in the current index.")
 
         log.append(f"Exporting {len(volume_seg_tuples)} volume-segmentation pairs from index '{self._active_index}'.")
 
@@ -233,7 +234,7 @@ class KomsService:
 
             log.append(f"Exported to {output_csv_path}")
         except Exception as exception:
-            raise VolSegException(f"Could not write to {output_csv_path}: {str(exception)}")
+            raise SegVerException(f"Could not write to {output_csv_path}: {str(exception)}")
 
         return log, warnings, errors
 
@@ -383,7 +384,7 @@ class KomsService:
         errors = []
 
         if index_name not in self._available_indexes:
-            raise VolSegException(f"\nIndex '{index_name}' is not available. Available indexes: {', '.join(self._available_indexes)}\n")
+            raise SegVerException(f"\nIndex '{index_name}' is not available. Available indexes: {', '.join(self._available_indexes)}\n")
 
         if index_name == self._active_index:
             log.append(f"Index '{index_name}' is already active.")

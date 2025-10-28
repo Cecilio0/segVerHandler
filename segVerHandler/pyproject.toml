@@ -1,9 +1,11 @@
 [project]
-name = "volsegsync"
+name = "segverhandler"
 version = "0.1.1"
-description = "Volumen-Segmentation Sync: command-line utility for pairing, syncing, and verifying biomedical volumes and their segmentations."
+description = "Segmentation Version Handler: command-line utility for pairing, syncing, and verifying biomedical volumes and their segmentations."
 authors = [
-    {name = "William A. Romero R."}
+    {name = "William A. Romero R."},
+    {name = "Daniel Restrepo Q."},
+    {name = "Pablo Mesa H."}
 ]
 license = {text = "MIT"}
 readme = "../README.md"
@@ -23,4 +25,4 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-volsegsync="volsegsync:cli"
+segverhandler="segverhandler:cli"

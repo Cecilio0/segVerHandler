@@ -4,15 +4,17 @@
 # Name        : volsegsync.py
 # Description : Volumen-Segmentation Sync - Main file.  
 #
-# Authors     : William A. Romero R.  <contact@waromero.com>
+# Authors     : William A. Romero R.  <contact@waromero.com>,
+#               Daniel Restrepo Q. <drones9182@gmail.com>,
+#               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 import os
 import click
 
 from config import  (
-    VOLSEG_INSTANCE_DIRECTORY_NAME,
-    VOLSEG_INSTANCE_CFG_FILE_NAME,
-    VOLSEG_INSTANCE_IDX_FILE_NAME )
+    SEGVER_INSTANCE_DIRECTORY_NAME,
+    SEGVER_INSTANCE_CFG_FILE_NAME,
+    SEGVER_INSTANCE_IDX_FILE_NAME )
 
 import koms
 
@@ -24,9 +26,9 @@ def cli(ctx: click.Context) -> None:
     Volumen-Segmentation Sync.
     """
     working_directory = os.getcwd()
-    config_directory = os.path.join(working_directory, VOLSEG_INSTANCE_DIRECTORY_NAME)
-    config_file_path = os.path.join(config_directory,  VOLSEG_INSTANCE_CFG_FILE_NAME)
-    index_file_path = os.path.join( config_directory,  VOLSEG_INSTANCE_IDX_FILE_NAME)
+    config_directory = os.path.join(working_directory, SEGVER_INSTANCE_DIRECTORY_NAME)
+    config_file_path = os.path.join(config_directory,  SEGVER_INSTANCE_CFG_FILE_NAME)
+    index_file_path = os.path.join( config_directory,  SEGVER_INSTANCE_IDX_FILE_NAME)
 
     ctx.ensure_object(dict)
     ctx.obj["current_working_directory"] = working_directory

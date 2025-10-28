@@ -14,7 +14,7 @@ import numpy as np
 import os
 
 
-from volsegSync_utils import VolSegSynParser
+from volsegSync_utils import SegVerParser
 
 
 class ImageDataMatchingError(Exception):
@@ -56,9 +56,9 @@ if __name__ == "__main__":
     
     ROUND_DECIMALS = 3
            
-    INPUT_VOLSEGSYNC_DIRECTORY_PATH="./volsegSync-data-weck_phantom-use_case_01"
+    INPUT_SEGVERSYNC_DIRECTORY_PATH="./volsegSync-data-weck_phantom-use_case_01"
        
-    volsec_parser = VolSegSynParser( INPUT_VOLSEGSYNC_DIRECTORY_PATH )
+    volsec_parser = SegVerParser( INPUT_SEGVERSYNC_DIRECTORY_PATH )
 
     volumes = volsec_parser.GetVolumes()
     segmentations = volsec_parser.GetSegmentations()
