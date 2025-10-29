@@ -1,6 +1,6 @@
-# Welcome to volSegSync
+# Welcome to SegVerHandler
 
-A CLI tool for managing and synchronising volume – segmentation data pairs.
+A CLI tool for managing segmentation versions, as well as synchronising volume – segmentation data pairs.
 
 ## Overview
 
@@ -10,7 +10,7 @@ The training data typically consist of two elements: the anatomical image and th
 
 There is a one-to-one correspondence between an image and its segmentation; in other words, each segmentation is paired with exactly one image.
 
-*volsegSync: Volume – Segmentation Synchronisation* is a CLI tool for managing and synchronising volume – segmentation data pairs. 
+SegVerHandler: Segmentation Version Handler* is a CLI tool for managing segmentation versions, as well as synchronising volume – segmentation data pairs.
 
 
 ## Introduction
