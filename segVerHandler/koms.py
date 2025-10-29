@@ -176,7 +176,7 @@ def rename(ctx: click.Context, name, description):
 @click.pass_context
 def update( ctx: click.Context ):
     """
-    Update file index.
+    Update (volume, segmentation) relationships in active index.
     """
     try:
         service = KomsService(ctx)
@@ -221,7 +221,7 @@ def update( ctx: click.Context ):
 @click.pass_context
 def export( ctx: click.Context, output: str ):
     """
-    Export main index.
+    Export active index (volume, segmentation) tuples.
     """
     try:
         service = KomsService(ctx)

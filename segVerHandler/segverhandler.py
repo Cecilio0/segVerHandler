@@ -23,7 +23,7 @@ import koms
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """
-    Volumen-Segmentation Sync.
+    Segmentation Version Handler.
     """
     working_directory = os.getcwd()
     config_directory = os.path.join(working_directory, SEGVER_INSTANCE_DIRECTORY_NAME)
