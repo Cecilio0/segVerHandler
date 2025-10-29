@@ -16,7 +16,6 @@ import config as cfg
 
 from config import load_config
 from commons import SegVerException
-from exceptions import SegVerParserException
 from manifest import (
     load_manifest,
     get_volume_seg_tuples
