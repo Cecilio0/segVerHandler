@@ -38,7 +38,7 @@ def init( ctx: click.Context,
           segmentations: str,
           sext:str ):
     """
-    Initialize a new segVerHandler instance in the current directory.
+    Initialize a segVerHandler instance in the active directory.
     """
     try:
         log, _, errors = KomsService.initialize_instance(ctx, name, description, index_name, volumes, vext, segmentations, sext)
@@ -296,7 +296,7 @@ def link(ctx: click.Context, volume_fname: str, seg_fname: str):
 @click.pass_context
 def update_seg(ctx: click.Context, volume_fname: str, seg_version: str, seg_author: str, seg_notes: str, seg_tags: str):
     """
-    Update metadata of a segmentation version associated to a volume.
+    Update metadata of a segmentation version.
     """
     try:
         service = KomsService(ctx)
@@ -324,7 +324,7 @@ def update_seg(ctx: click.Context, volume_fname: str, seg_version: str, seg_auth
 @click.pass_context
 def select_seg(ctx: click.Context, volume_fname: str, seg_version: str):
     """
-    Set the selected segmentation version for a given volume in the manifest.
+    Set the selected segmentation version for a given volume.
     """
     try:
         service = KomsService(ctx)
