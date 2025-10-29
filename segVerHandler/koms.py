@@ -244,7 +244,7 @@ def display( ctx: click.Context ):
     """
     try:
         service = KomsService(ctx)
-        config_working_directory = service.get_volseg_directory()
+        config_working_directory = service.get_segver_directory()
     except SegVerException as e:
         click.echo(click.style(f"Error: {e}", fg="red"))
         exit()

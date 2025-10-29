@@ -46,18 +46,18 @@ from commons import (
 class KomsService:
     def initialize_instance(ctx, name, description, index_name, volumes, vext, segmentations, sext):
         """
-        Initialize a new volsegSync instance in the current directory.
+        Initialize a new segVerHandler instance in the current directory.
         """
 
-        volseg_directory = ctx.obj["current_working_directory"]
+        segver_directory = ctx.obj["current_working_directory"]
         config_directory = ctx.obj["current_config_directory"]
         config_file_path = ctx.obj["current_config_file_path"]
 
-        volumes_path = os.path.join(volseg_directory, volumes)
-        segmentations_path = os.path.join(volseg_directory, segmentations)
+        volumes_path = os.path.join(segver_directory, volumes)
+        segmentations_path = os.path.join(segver_directory, segmentations)
 
         if os.path.isdir(config_directory) or os.path.isfile(config_file_path):
-            raise SegVerException(f"\nA volsegSync instance already exists in this directory.\n")
+            raise SegVerException(f"\nA segVerHandler instance already exists in this directory.\n")
         
         _, warnings, errors, matches = verify_volseg_match(volumes_path, vext, segmentations_path, sext)
 
@@ -69,13 +69,13 @@ class KomsService:
             click.echo(click.style(warning_msg, fg="yellow"))
             
         if len(warnings)>0 and not click.confirm('Do you want to continue?'):
-            click.echo("volsegSync is not initialized in this directory.")
+            click.echo("segVerHandler is not initialized in this directory.")
             exit()
 
         try: 
             os.mkdir(config_directory)
         except Exception as exception:
-            raise SegVerException(f"\nCould not create volsegSync instance directory: {str(exception)}\n")
+            raise SegVerException(f"\nCould not create segVerHandler instance directory: {str(exception)}\n")
 
         cfg = load_config(config_file_path)
         cfg['summary']['name'] = name
@@ -95,18 +95,18 @@ class KomsService:
         manifest["volumes"] = matches
         save_manifest(config_directory, manifest)
 
-        log = [f"volsegSync instance initialized in {volseg_directory}"]
+        log = [f"segVerHandler instance initialized in {segver_directory}"]
 
         return log, warnings, errors
 
 
     def __init__(self, ctx: click.Context):
-        self._volseg_directory = ctx.obj["current_working_directory"]
+        self._segver_directory = ctx.obj["current_working_directory"]
         self._config_directory = ctx.obj["current_config_directory"]
         self._config_file_path = ctx.obj["current_config_file_path"]
 
         if not os.path.isdir(self._config_directory) or not os.path.isfile(self._config_file_path):
-            raise SegVerException(f"\nNo volsegSync instance found in this directory.\n")
+            raise SegVerException(f"\nNo segVerHandler instance found in this directory.\n")
 
         self._config = load_config(self._config_file_path)
 
@@ -134,8 +134,8 @@ class KomsService:
     def get_available_indexes(self):
         return self._available_indexes
 
-    def get_volseg_directory(self):
-        return self._volseg_directory
+    def get_segver_directory(self):
+        return self._segver_directory
 
 
     def create_index(self, index_name, volumes, vext, segmentations, sext):
@@ -146,8 +146,8 @@ class KomsService:
         if index_name in self._available_indexes:
             raise SegVerException(f"\nIndex '{index_name}' already exists. Available indexes: {', '.join(self._available_indexes)}\n")
         
-        volumes_path = os.path.join(self._volseg_directory, volumes)
-        segmentations_path = os.path.join(self._volseg_directory, segmentations)
+        volumes_path = os.path.join(self._segver_directory, volumes)
+        segmentations_path = os.path.join(self._segver_directory, segmentations)
 
         # Find matches for the new index
         log, warnings, errors, matches = verify_volseg_match(volumes_path, vext, segmentations_path, sext)
@@ -221,7 +221,7 @@ class KomsService:
         if len(errors) > 0:
             raise SegVerException(errors[0])
 
-        volume_seg_tuples = get_volume_seg_tuples(self._manifest, self._volseg_directory)
+        volume_seg_tuples = get_volume_seg_tuples(self._manifest, self._segver_directory)
 
         if not volume_seg_tuples:
             raise SegVerException("No volumes found in the current index.")
@@ -488,8 +488,8 @@ class KomsService:
     
 
     def __get_paths_and_exts(self):
-        volumes_path = os.path.join(self._volseg_directory, self._manifest.get("volume-path"))
-        segmentations_path = os.path.join(self._volseg_directory, self._manifest.get("label-path"))
+        volumes_path = os.path.join(self._segver_directory, self._manifest.get("volume-path"))
+        segmentations_path = os.path.join(self._segver_directory, self._manifest.get("label-path"))
         vext = self._manifest.get("volume-extension")
         sext = self._manifest.get("label-extension")
         return volumes_path, vext, segmentations_path, sext

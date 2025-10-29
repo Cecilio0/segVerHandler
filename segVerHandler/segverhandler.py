@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #-------------------------------------------------------------------------------
-# Name        : volsegsync.py
-# Description : Volumen-Segmentation Sync - Main file.  
+# Name        : segverhandler.py
+# Description : Segmentation Version Handler - Main file.  
 #
 # Authors     : William A. Romero R.  <contact@waromero.com>,
 #               Daniel Restrepo Q. <drones9182@gmail.com>,
