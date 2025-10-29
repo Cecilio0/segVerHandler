@@ -378,6 +378,60 @@ class KomsService:
             log.append(f"Selected segmentation updated: {vol_base} -> {vol_base}-{seg_version}")
 
         return log, warnings, errors
+    
+
+    def update_segmentation_metadata(self, volume_fname, seg_version, seg_author, seg_notes, seg_tags):
+        log = []
+        warnings = []
+        errors = []
+
+        vol_base = volume_fname[:-len(self._manifest.get("volume-extension"))]
+
+        if vol_base not in self._manifest.get("volumes", {}):
+            errors.append(f"Volume '{vol_base}' not found in manifest.")
+            return log, warnings, errors
+
+        versions = self._manifest["volumes"][vol_base]["versions"]
+        version_found = False
+        for v in versions:
+            if v["version"] == seg_version:
+                if seg_author != "" and seg_author != v.get("author", ""):
+                    log.append(f"{'Old author':>45} : {v.get("author", "")}")
+                    log.append(f"{'New author':>45} : {seg_author}")
+                    v["author"] = seg_author
+                else:
+                    log.append(f"{'Author':>45} : {v.get("author", "")} (unchanged)")
+
+                if seg_notes != "" and seg_notes != v.get("notes", ""):
+                    log.append(f"{'Old notes':>45} : {v.get("notes", "")}")
+                    log.append(f"{'New notes':>45} : {seg_notes}")
+                    v["notes"] = seg_notes
+                else:
+                    log.append(f"{'Notes':>45} : {v.get("notes", "")} (unchanged)")
+
+                if seg_tags != "" and seg_tags != v.get("tags", []):
+                    seg_tags = [tag.strip() for tag in seg_tags.split(',')]
+                    log.append(f"{'Old tags':>45} : {v.get("tags", [])}")
+                    log.append(f"{'New tags':>45} : {seg_tags}")
+                    v["tags"] = seg_tags
+                else:
+                    log.append(f"{'Tags':>45} : {v.get("tags", [])} (unchanged)")
+
+                version_found = True
+                break
+
+        if not version_found:
+            errors.append(f"Version '{seg_version}' not found for volume '{vol_base}'.")
+            return log, warnings, errors
+        
+        log.append("")  # Blank line for readability
+
+        self._manifest["volumes"][vol_base]["versions"] = versions
+        save_manifest(self._config_directory, self._manifest)
+
+        log.append(f"Metadata updated for volume '{vol_base}', version '{seg_version}'.")
+
+        return log, warnings, errors
 
 
     def select_index(self, index_name):

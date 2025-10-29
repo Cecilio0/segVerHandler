@@ -285,6 +285,37 @@ def link(ctx: click.Context, volume_fname: str, seg_fname: str):
 
     
 #-------------------------------------------------------------------------------
+# COMMAND: UPDATE-SEG
+#-------------------------------------------------------------------------------
+@click.command(name="update-seg")
+@click.option("--volume", "volume_fname", prompt="Type the volume file name (with extension)")
+@click.option("--version", "seg_version", prompt="Type the segmentation version to update (e.g., v1, v2)")
+@click.option("--author", "seg_author", prompt="Type the NEW author for the segmentation (e.g., John Doe)", default="")
+@click.option("--notes", "seg_notes", prompt="Type the NEW notes for the segmentation (e.g., Important changes)", default="")
+@click.option("--tags", "seg_tags", prompt="Type the NEW tags for the segmentation separated by commas (e.g., brain, tumor)", default="")
+@click.pass_context
+def update_seg(ctx: click.Context, volume_fname: str, seg_version: str, seg_author: str, seg_notes: str, seg_tags: str):
+    """
+    Update metadata of a segmentation version associated to a volume.
+    """
+    try:
+        service = KomsService(ctx)
+        log, warnings, errors = service.update_segmentation_metadata(volume_fname, seg_version, seg_author, seg_notes, seg_tags)
+    except SegVerException as e:
+        click.echo(click.style(f"Error: {e}", fg="red"))
+        exit()
+        
+    for error_msg in errors:
+        click.echo(click.style(error_msg, fg="red"))
+
+    for warning_msg in warnings:
+        click.echo(click.style(warning_msg, fg="yellow"))
+
+    for log_msg in log:
+        click.echo(click.style(log_msg, fg="green"))
+
+
+#-------------------------------------------------------------------------------
 # COMMAND: SELECT-SEG
 #-------------------------------------------------------------------------------
 @click.command(name="select-seg")
@@ -294,9 +325,6 @@ def link(ctx: click.Context, volume_fname: str, seg_fname: str):
 def select_seg(ctx: click.Context, volume_fname: str, seg_version: str):
     """
     Set the selected segmentation version for a given volume in the manifest.
-    It updates the manifest's "selected-version" field for the volume, showing
-    a warning if the segmentation file does not exist alongside the list of
-    available segmentations.
     """
     try:
         service = KomsService(ctx)
@@ -313,6 +341,7 @@ def select_seg(ctx: click.Context, volume_fname: str, seg_version: str):
 
     for log_msg in log:
         click.echo(click.style(log_msg, fg="green"))
+
 
 #-------------------------------------------------------------------------------
 # COMMAND: SELECT-INDEX
