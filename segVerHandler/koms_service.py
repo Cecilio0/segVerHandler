@@ -8,6 +8,7 @@
 #               Pablo Mesa H. <pablomesa08@gmail.com>
 #-------------------------------------------------------------------------------
 
+from datetime import datetime, timezone
 import os
 import click
 
@@ -393,12 +394,14 @@ class KomsService:
 
         versions = self._manifest["volumes"][vol_base]["versions"]
         version_found = False
+        changes_made = False
         for v in versions:
             if v["version"] == seg_version:
                 if seg_author != "" and seg_author != v.get("author", ""):
                     log.append(f"{'Old author':>45} : {v.get("author", "")}")
                     log.append(f"{'New author':>45} : {seg_author}")
                     v["author"] = seg_author
+                    changes_made = True
                 else:
                     log.append(f"{'Author':>45} : {v.get("author", "")} (unchanged)")
 
@@ -406,6 +409,7 @@ class KomsService:
                     log.append(f"{'Old notes':>45} : {v.get("notes", "")}")
                     log.append(f"{'New notes':>45} : {seg_notes}")
                     v["notes"] = seg_notes
+                    changes_made = True
                 else:
                     log.append(f"{'Notes':>45} : {v.get("notes", "")} (unchanged)")
 
@@ -414,8 +418,15 @@ class KomsService:
                     log.append(f"{'Old tags':>45} : {v.get("tags", [])}")
                     log.append(f"{'New tags':>45} : {seg_tags}")
                     v["tags"] = seg_tags
+                    changes_made = True
                 else:
                     log.append(f"{'Tags':>45} : {v.get("tags", [])} (unchanged)")
+
+                if changes_made == False:
+                    log.append(f"No changes made to metadata for volume '{vol_base}', version '{seg_version}'.")
+                else:
+                    v["last-updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    log.append(f"{'Last updated':>45} : {v['last-updated']}")
 
                 version_found = True
                 break
